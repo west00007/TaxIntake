@@ -1,0 +1,202 @@
+﻿<section id="panel_primary" class="form_section">
+	<h2 class="section_title">Information of Primary Taxpayer</h2>
+
+	<EditForm Model="@iForm">
+		<FluentValidator />
+		<ValidationSummary />
+
+		<div class="field_row field_row_2_columns">
+			<div class="field column_1">
+				<label for="primary_first_name">First Name <span class="required">*</span></label>
+				<InputText id="primary_first_name" @bind-Value="iForm.Primary_First_Name" required autocomplete="given-name" />
+			</div>
+			<div class="field column_2">
+				<label for="primary_last_name">Last Name <span class="required">*</span></label>
+				<InputText id="primary_last_name" @bind-Value="iForm.Primary_Last_Name" required autocomplete="family-name" />
+			</div>
+		</div>
+
+		<div class="field">
+			<label for="primary_title">Title / Honorific</label>
+			<InputText id="primary_title" @bind-Value="iForm.Primary_Title" placeholder="e.g., Mr., Ms., Mrs." />
+		</div>
+
+		<div class="field">
+			<label for="primary_marital_status">Marital Status <span class="required">*</span></label>
+			<InputSelect id="primary_marital_status"
+						 @bind-Value="iForm.Primary_Marital_Status"
+						 required>
+				<option value="">Select…</option>
+				@foreach (var status in Enum.GetValues<MaritalStatus>())
+				{
+					<option value="@status">@status.ToString()</option>
+				}
+			</InputSelect>
+		</div>
+
+		<div class="field_row field_row_2_columns">
+			<div class="field column_1">
+				<label for="primary_sin">Social Insurance Number (S.I.N) <span class="required">*</span></label>
+				<InputText id="primary_sin"
+						   @bind-Value="iForm.Primary_SIN" @bind-Value:after="FormatPrimarySIN"
+						   inputmode="numeric" placeholder="000 000 000" required autocomplete="off" />
+			</div>
+			<div class="field column_2">
+				<label for="dateOfBirth-year">Date of Birth <span class="required">*</span></label>
+				<InputText id="primary_dob"
+						   @bind-Value="iForm.Primary_DOB" @bind-Value:after="FormatPrimaryDOB"
+						   placeholder="YYYY-MM-DD" required autocomplete="off" />
+			</div>
+		</div>
+
+		<fieldset class="fieldset">
+			<legend>Mailing Address</legend>
+			<div class="field">
+				<label for="primary_street_address">Street Address <span class="required">*</span></label>
+				<InputText id="primary_street_address" @bind-Value="iForm.Primary_Street_Address" required autocomplete="street-address" />
+			</div>
+			<div class="field_row field_row_2_columns">
+				<div class="field">
+					<label for="primary_po_box">PO Box</label>
+					<InputText id="primary_po_box" @bind-Value="iForm.Primary_PO_Box" />
+				</div>
+				<div class="field">
+					<label for="primary_rr">RR (Rural Route)</label>
+					<InputText id="primary_rr" @bind-Value="iForm.Primary_RR" />
+				</div>
+			</div>
+			<div class="field">
+				<label for="primary_city">City <span class="required">*</span></label>
+				<InputText id="primary_city" @bind-Value="iForm.Primary_City" required autocomplete="city" />
+			</div>
+			<div class="field_row field_row_2_columns">
+				<div class="field column_1">
+					<label for="primary_province">Province / Territory <span class="required">*</span></label>
+					<InputSelect id="primary_province"
+								 @bind-Value="iForm.Primary_Province"
+								 required>
+						<option value="">Select…</option>
+						@foreach (var province in Enum.GetValues<Province>())
+						{
+							<option value="@province">@province.ToString()</option>
+						}
+					</InputSelect>
+				</div>
+				<div class="field column_2">
+					<label for="primary_postal_code">Postal Code <span class="required">*</span></label>
+					<InputText id="primary_postal_code"
+							   @bind-Value="iForm.Primary_Postal_Code" @bind-Value:after="FormatPostalCode"
+							   placeholder="A1A 1A1" required autocomplete="postal-code"
+							   style="text-transform: uppercase;" />
+				</div>
+			</div>
+		</fieldset>
+
+		<div class="field">
+			<label for="primary_phone_number">Phone Number <span class="required">*</span></label>
+			<InputText id="primary_phone_number"
+					   @bind-Value="iForm.Primary_Phone_Number"
+					   required autocomplete="phone-number" />
+		</div>
+		<div class="field">
+			<label for="primary_email">Email Address <span class="required">*</span></label>
+			<InputText id="primary_email"
+					   @bind-Value="iForm.Primary_Email"
+					   required autocomplete="email" />
+		</div>
+
+		<fieldset class="field">
+			<legend class="field-label">Are you a Canadian citizen? <span class="required">*</span></legend>
+			<div class="radio-group">
+				<InputRadioGroup @bind-Value="iForm.Primary_Is_Citizen">
+					<label class="radio">
+						<InputRadio Value="@(true)" /> Yes
+					</label>
+					<label class="radio">
+						<InputRadio Value="@(false)" /> No
+					</label>
+				</InputRadioGroup>
+			</div>
+		</fieldset>
+
+		@if (iForm.Primary_Is_Citizen == true)
+		{
+			<fieldset class="field conditional">
+				<legend class="field-label">Elections Canada Authorization</legend>
+				<p class="hint">As a Canadian citizen, do you authorize the CRA to share your information with Elections Canada to update the National Register of Electors?</p>
+				<div class="radio-group">
+					<InputRadioGroup @bind-Value="iForm.Primary_Is_To_Reveal_Citizen">
+						<label class="radio">
+							<InputRadio Value="@(true)" /> Yes
+						</label>
+						<label class="radio">
+							<InputRadio Value="@(false)" /> No
+						</label>
+					</InputRadioGroup>
+				</div>
+			</fieldset>
+		}
+
+		<fieldset class="field">
+			<legend class="field-label">Did you sell your principal residence in 2025? <span class="required">*</span></legend>
+			<div class="radio-group">
+				<InputRadioGroup @bind-Value="iForm.Primary_Is_To_Sell_Principal_Residence">
+					<label class="radio">
+						<InputRadio Value="@(true)" /> Yes
+					</label>
+					<label class="radio">
+						<InputRadio Value="@(false)" /> No
+					</label>
+				</InputRadioGroup>
+			</div>
+		</fieldset>
+
+		<fieldset class="field">
+			<legend class="field-label">Did you sell any other real estate or a pre-construction contract in 2025? <span class="required">*</span></legend>
+			<div class="radio-group">
+				<InputRadioGroup @bind-Value="iForm.Primary_Is_To_Sell_Other_Real_Estate">
+					<label class="radio">
+						<InputRadio Value="@(true)" /> Yes
+					</label>
+					<label class="radio">
+						<InputRadio Value="@(false)" /> No
+					</label>
+				</InputRadioGroup>
+			</div>
+		</fieldset>
+
+		<fieldset class="field">
+			<legend class="field-label">Did you own foreign investments that cost more than $100,000 CAD total at any point in 2025? <span class="required">*</span></legend>
+			<div class="radio-group">
+				<InputRadioGroup @bind-Value="iForm.Primary_Is_To_Have_Foreign_Investments">
+					<label class="radio">
+						<InputRadio Value="@(true)" /> Yes
+					</label>
+					<label class="radio">
+						<InputRadio Value="@(false)" /> No
+					</label>
+				</InputRadioGroup>
+			</div>
+		</fieldset>
+
+		<fieldset class="field">
+			<legend class="field-label">Did you own 10% or more of a business located outside of Canada in 2025? <span class="required">*</span></legend>
+			<div class="radio-group">
+				<InputRadioGroup @bind-Value="iForm.Primary_Is_To_Own_Foreign_Business">
+					<label class="radio">
+						<InputRadio Value="@(true)" /> Yes
+					</label>
+					<label class="radio">
+						<InputRadio Value="@(false)" /> No
+					</label>
+				</InputRadioGroup>
+			</div>
+		</fieldset>
+
+	</EditForm>
+</section>
+
+@code {
+	private IntakeForm iForm = new();
+
+}
